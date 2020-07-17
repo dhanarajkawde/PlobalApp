@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>FontSizeXXXXXXS</key>
+	<integer>9</integer>
+	<key>FontSizeXXXXXXXS</key>
+	<integer>8</integer>
+	<key>FontSizeXXXXXS</key>
+	<integer>10</integer>
+	<key>FontSizeXXXXS</key>
+	<integer>12</integer>
+	<key>FontSizeXXXS</key>
+	<integer>13</integer>
+	<key>FontSizeXXS</key>
+	<integer>14</integer>
+	<key>FontSizeXS</key>
+	<integer>15</integer>
+	<key>FontSizeS</key>
+	<integer>16</integer>
+	<key>FontSizeM</key>
+	<integer>17</integer>
+	<key>FontSizeL</key>
+	<integer>18</integer>
+	<key>FontSizeXL</key>
+	<integer>19</integer>
+	<key>FontSizeXXL</key>
+	<integer>20</integer>
+	<key>FontSizeXXXL</key>
+	<integer>21</integer>
+	<key>FontSizeXXXXL</key>
+	<integer>30</integer>
+	<key>FontSizeXXXXXL</key>
+	<integer>32</integer>
+	<key>FontSizeXXXXXXL</key>
+	<integer>37</integer>
+	<key>FontSizeXXXXXXXL</key>
+	<integer>52</integer>
+</dict>
+</plist>
