@@ -8,7 +8,7 @@
 
 import Foundation
 
-/// Class to get and parse List Data
+/// Class to get and parse Company Data
 class CompanyViewModel: NSObject {
     
     static let sharedInstance = CompanyViewModel()
@@ -21,7 +21,7 @@ class CompanyViewModel: NSObject {
             
             do
             {
-                if let jsonData = data
+                if let jsonData = data /// nil chek
                 {
                     let deal = try JSONDecoder().decode(Company.self, from: jsonData)
                     completion(deal)
@@ -29,12 +29,13 @@ class CompanyViewModel: NSObject {
             }
             catch
             {
+                completion(nil)
                 print("Parse Error: \(error)")
             }
             
         }, failure: { (data, response, error) in
             
-            
+            completion(nil)
         })
     }
 }

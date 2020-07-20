@@ -42,16 +42,16 @@ class DashboardViewController: BaseViewController {
             
             self.arrselectedSortType.removeAll()
             
-            if index == 0 {
+            if index == 0 { /// for Total Sales filter
                 self.createButtonTypeArray(type: .TotalSales, count: self.arrCompanyData?.count ?? 0)
             }
-            else if index == 1 {
+            else if index == 1 { /// for Add To Cart filter
                 self.createButtonTypeArray(type: .AddToCart, count: self.arrCompanyData?.count ?? 0)
             }
-            else if index == 2 {
+            else if index == 2 {/// for Downloads filter
                 self.createButtonTypeArray(type: .Downloads, count: self.arrCompanyData?.count ?? 0)
             }
-            else {
+            else {/// for User Sessions filter
                 self.createButtonTypeArray(type: .UserSessions, count: self.arrCompanyData?.count ?? 0)
             }
             
@@ -114,7 +114,7 @@ class DashboardViewController: BaseViewController {
             }
         }
         else {
-            if isPortrait {
+            if isPortrait { /// if potrait
                 
                 flowLayout.itemSize = CGSize(width: self.collectionViwDashboard.frame.size.width - 15, height: 290)
             }
@@ -147,18 +147,22 @@ class DashboardViewController: BaseViewController {
                 
                 self.stopProgress()
                 
-                if (companyDetails?.apps?.count ?? 0) > 0 {
+                if companyDetails != nil {
                     
-                    self.arrCompanyData = companyDetails?.apps
-                    
-                    self.createButtonTypeArray(type: .TotalSales, count: self.arrCompanyData?.count ?? 0)
-                    
-                    self.collectionViwDashboard.reloadData()
+                    if (companyDetails?.apps?.count ?? 0) > 0 { /// nil check
+                        
+                        self.arrCompanyData = companyDetails?.apps
+                        
+                        self.createButtonTypeArray(type: .TotalSales, count: self.arrCompanyData?.count ?? 0)
+                        
+                        self.collectionViwDashboard.reloadData()
+                    }
                 }
             }
         }
     }
     
+    /// Create array of button type
     func createButtonTypeArray(type:TypeOfButton, count:Int) {
         
         for _ in 0..<(self.arrCompanyData?.count ?? 0) {
@@ -191,8 +195,12 @@ extension DashboardViewController : UICollectionViewDataSource, UICollectionView
     }
 }
 
+// MARK: - CompanyGraphCollectionViewCellDelegate
 extension DashboardViewController : CompanyGraphCollectionViewCellDelegate {
     
+    /// Track selected sorting option from cell
+    /// - Parameter index: index
+    /// - Parameter type: sort or button type
     func selectedButtonType(index: Int, type: TypeOfButton) {
         
         self.arrselectedSortType[index] = type

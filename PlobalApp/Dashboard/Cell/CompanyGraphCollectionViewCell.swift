@@ -96,6 +96,9 @@ class CompanyGraphCollectionViewCell: UICollectionViewCell {
         self.lblCompanyTotalSalesValue.setContentForLabel(title: "GBP 6,872,876", fontSize: DynamicFont.FontSizeXXS, FontName: DynamicFont.HelveticaNeue_Bold, textColor: .black)
     }
     
+    /// set data for cell
+    /// - Parameter companyDetails: company details
+    /// - Parameter type: type of button or sirting option
     func setData(companyDetails:CompanyDetails?, type:TypeOfButton) {
                         
         self.objectDownloads = companyDetails?.data?.downloads
@@ -257,8 +260,7 @@ class CompanyGraphCollectionViewCell: UICollectionViewCell {
             self.lblCompanyTotalSalesValue.text = "GBP \(self.objectDownloads?.total ?? 0)"
             self.setGrayBackground(btn: self.btnDownloads)
         }
-        else {
-            
+        else { /// if selected User Sessions
             self.setDataCount(range: (self.objectSessions?.month_wise!.arrMonth)!)
             self.lblCompanyTotalSalesValue.text = "GBP \(self.objectSessions?.total ?? 0)"
             self.setGrayBackground(btn: self.btnUserSessions)
@@ -282,7 +284,7 @@ class CompanyGraphCollectionViewCell: UICollectionViewCell {
             
             self.setWhiteBackground(btn: self.btnDownloads)
         }
-        else {
+        else { /// if deselected User Sessions
             
             self.setWhiteBackground(btn: self.btnUserSessions)
         }
