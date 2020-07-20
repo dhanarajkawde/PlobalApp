@@ -18,6 +18,11 @@ enum TypeOfButton {
     case UserSessions
 }
 
+protocol CompanyGraphCollectionViewCellDelegate {
+    
+    func selectedButtonType(index:Int, type:TypeOfButton)
+}
+
 /// Class show company details
 class CompanyGraphCollectionViewCell: UICollectionViewCell {
 
@@ -37,6 +42,11 @@ class CompanyGraphCollectionViewCell: UICollectionViewCell {
     weak var axisFormatDelegate: IAxisValueFormatter?
     var selectedBtn:TypeOfButton = .TotalSales
     let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    var objectDownloads:CommonData?
+    var objectSessions:CommonData?
+    var objectTotalSales:CommonData?
+    var objectAddToCart:CommonData?
+    var delegate:CompanyGraphCollectionViewCellDelegate?
     
     /// Configure Cell
     override func awakeFromNib() {
@@ -48,8 +58,6 @@ class CompanyGraphCollectionViewCell: UICollectionViewCell {
         self.axisFormatDelegate = self
         self.chartView.setUpLineChart()
         self.chartView.animate(xAxisDuration: 1.0)
-        
-        self.updateChartData()
     }
     
     // MARK: Custom Methods
@@ -76,7 +84,7 @@ class CompanyGraphCollectionViewCell: UICollectionViewCell {
         self.btnUserSessions.layer.borderColor = GlobalColors.colorLightGray.cgColor
         
         self.viwBack.layer.cornerRadius = 10.0
-        self.viwBack.addShadow(offset: CGSize(width: 0, height: 0), color: GlobalColors.colorLightGray, radius: 10, opacity: 0.4)
+        self.viwBack.addShadow(offset: CGSize(width: 0, height: 0), color: GlobalColors.colorLightGray, radius: 5, opacity: 0.4)
     }
     
     /// Set up Data
@@ -88,23 +96,72 @@ class CompanyGraphCollectionViewCell: UICollectionViewCell {
         self.lblCompanyTotalSalesValue.setContentForLabel(title: "GBP 6,872,876", fontSize: DynamicFont.FontSizeXXS, FontName: DynamicFont.HelveticaNeue_Bold, textColor: .black)
     }
     
+    func setData(companyDetails:CompanyDetails?, type:TypeOfButton) {
+                        
+        self.objectDownloads = companyDetails?.data?.downloads
+        self.objectSessions = companyDetails?.data?.sessions
+        self.objectAddToCart = companyDetails?.data?.add_to_cart
+        self.objectTotalSales = companyDetails?.data?.total_sale
+        
+        self.lblCompanyName.text = companyDetails?.name ?? ""
+        
+        self.updateChartData(type: type)
+    }
+    
     /// Pass data to chart
-    func updateChartData() {
+    func updateChartData(type:TypeOfButton) {
         chartView.data = nil
         
-        self.setDataCount(Int(7), range: UInt32(100))
+        if type == .TotalSales {
+            if self.selectedBtn != .TotalSales { /// avoid to re selecting same button
+                self.fadeOutAnimation()
+                self.fadeInAnimation(type: .TotalSales)
+                self.selectedBtn = .TotalSales
+            }
+            self.setDataCount(range: (self.objectTotalSales?.month_wise!.arrMonth)!)
+            self.lblCompanyTotalSalesValue.text = "GBP \(self.objectTotalSales?.total ?? 0)"
+        }
+        else if type == .AddToCart {
+            if self.selectedBtn != .AddToCart { /// avoid to re selecting same button
+                self.fadeOutAnimation()
+                self.fadeInAnimation(type: .AddToCart)
+                self.selectedBtn = .AddToCart
+            }
+            self.setDataCount(range: (self.objectAddToCart?.month_wise!.arrMonth)!)
+            self.lblCompanyTotalSalesValue.text = "GBP \(self.objectAddToCart?.total ?? 0)"
+        }
+        else if type == .Downloads {
+            if self.selectedBtn != .Downloads { /// avoid to re selecting same button
+                self.fadeOutAnimation()
+                self.fadeInAnimation(type: .Downloads)
+                self.selectedBtn = .Downloads
+            }
+            self.setDataCount(range: (self.objectDownloads?.month_wise!.arrMonth)!)
+            self.lblCompanyTotalSalesValue.text = "GBP \(self.objectDownloads?.total ?? 0)"
+        }
+        else {
+            if self.selectedBtn != .UserSessions { /// avoid to re selecting same button
+                self.fadeOutAnimation()
+                self.fadeInAnimation(type: .UserSessions)
+                self.selectedBtn = .UserSessions
+            }
+            self.setDataCount(range: (self.objectSessions?.month_wise!.arrMonth)!)
+            self.lblCompanyTotalSalesValue.text = "GBP \(self.objectSessions?.total ?? 0)"
+        }
     }
     
     /// Create random data from received data
     /// - Parameter count: x values
     /// - Parameter range: y values
-    func setDataCount(_ count: Int, range: UInt32) {
-        let values = (0..<count).map { (i) -> ChartDataEntry in
-            let val = Double(arc4random_uniform(range) + 3)
-            return ChartDataEntry(x: Double(i), y: val, data: months as AnyObject?)
+    func setDataCount(range: [Int]) {
+        
+        var lineChartEntry  = [ChartDataEntry]()
+        for i in 0..<range.count {
+            let value = ChartDataEntry(x: Double(i + 1), y: Double(range[i]))
+            lineChartEntry.append(value)
         }
         
-        let set1 = LineChartDataSet(entries: values, label: "")
+        let set1 = LineChartDataSet(entries: lineChartEntry, label: "")
         set1.drawValuesEnabled = false
         set1.drawIconsEnabled = false
         
@@ -138,6 +195,7 @@ class CompanyGraphCollectionViewCell: UICollectionViewCell {
             self.fadeOutAnimation()
             self.fadeInAnimation(type: .TotalSales)
             self.selectedBtn = .TotalSales
+            self.delegate?.selectedButtonType(index: sender.tag, type: .TotalSales)
         }
     }
     
@@ -149,6 +207,7 @@ class CompanyGraphCollectionViewCell: UICollectionViewCell {
             self.fadeOutAnimation()
             self.fadeInAnimation(type: .AddToCart)
             self.selectedBtn = .AddToCart
+            self.delegate?.selectedButtonType(index: sender.tag, type: .AddToCart)
         }
     }
     
@@ -160,6 +219,7 @@ class CompanyGraphCollectionViewCell: UICollectionViewCell {
             self.fadeOutAnimation()
             self.fadeInAnimation(type: .Downloads)
             self.selectedBtn = .Downloads
+            self.delegate?.selectedButtonType(index: sender.tag, type: .Downloads)
         }
     }
     
@@ -171,6 +231,7 @@ class CompanyGraphCollectionViewCell: UICollectionViewCell {
             self.fadeOutAnimation()
             self.fadeInAnimation(type: .UserSessions)
             self.selectedBtn = .UserSessions
+            self.delegate?.selectedButtonType(index: sender.tag, type: .UserSessions)
         }
     }
     
@@ -180,22 +241,29 @@ class CompanyGraphCollectionViewCell: UICollectionViewCell {
         
         if type == .TotalSales { /// if selected Total sales
             
+            self.setDataCount(range: (self.objectTotalSales?.month_wise!.arrMonth)!)
+            self.lblCompanyTotalSalesValue.text = "GBP \(self.objectTotalSales?.total ?? 0)"
             self.setGrayBackground(btn: self.btnTotalSales)
         }
         else if type == .AddToCart { /// if selected Add to cart
             
+            self.setDataCount(range: (self.objectAddToCart?.month_wise!.arrMonth)!)
+            self.lblCompanyTotalSalesValue.text = "GBP \(self.objectAddToCart?.total ?? 0)"
             self.setGrayBackground(btn: self.btnAddToCart)
         }
         else if type == .Downloads { /// if selected Downloads
             
+            self.setDataCount(range: (self.objectDownloads?.month_wise!.arrMonth)!)
+            self.lblCompanyTotalSalesValue.text = "GBP \(self.objectDownloads?.total ?? 0)"
             self.setGrayBackground(btn: self.btnDownloads)
         }
         else {
             
+            self.setDataCount(range: (self.objectSessions?.month_wise!.arrMonth)!)
+            self.lblCompanyTotalSalesValue.text = "GBP \(self.objectSessions?.total ?? 0)"
             self.setGrayBackground(btn: self.btnUserSessions)
         }
         
-        self.setDataCount(Int(7), range: UInt32(100))
         self.chartView.animate(xAxisDuration: 1.0)
     }
     
@@ -248,12 +316,12 @@ class CompanyGraphCollectionViewCell: UICollectionViewCell {
 
 // MARK: - IAxisValueFormatter
 extension CompanyGraphCollectionViewCell: IAxisValueFormatter {
-    
+
     /// Convert integer to month
     /// - Parameter value: value
     /// - Parameter axis: axis
     func stringForValue(_ value: Double, axis: AxisBase?) -> String {
 
-        return months[Int(value)]
+        return months[Int(value - 1)]
     }
 }

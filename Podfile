@@ -8,5 +8,5 @@ target 'PlobalApp' do
   # Pods for PlobalApp
   pod 'DropDown'
   pod 'Charts'
-
+  pod 'JGProgressHUD'
 end

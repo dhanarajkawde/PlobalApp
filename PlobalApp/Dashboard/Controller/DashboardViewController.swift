@@ -19,6 +19,8 @@ class DashboardViewController: BaseViewController {
     // MARK: Variable declaration
     let flowLayout = UICollectionViewFlowLayout()
     let cellIdentifier = "CompanyGraphCollectionViewCell"
+    var arrCompanyData:[CompanyDetails]?
+    var arrselectedSortType = [TypeOfButton]()
     
     // MARK: View Methods
     override func viewDidLoad() {
@@ -33,8 +35,25 @@ class DashboardViewController: BaseViewController {
         self.btnSort.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 5)
         self.btnSort.titleEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 0)
         
+        self.companyDetailsAPICall()
+        
         // Action triggered on selection
         self.singleSelectionListDropDown.selectionAction = { (index, item) in
+            
+            self.arrselectedSortType.removeAll()
+            
+            if index == 0 {
+                self.createButtonTypeArray(type: .TotalSales, count: self.arrCompanyData?.count ?? 0)
+            }
+            else if index == 1 {
+                self.createButtonTypeArray(type: .AddToCart, count: self.arrCompanyData?.count ?? 0)
+            }
+            else if index == 2 {
+                self.createButtonTypeArray(type: .Downloads, count: self.arrCompanyData?.count ?? 0)
+            }
+            else {
+                self.createButtonTypeArray(type: .UserSessions, count: self.arrCompanyData?.count ?? 0)
+            }
             
             self.collectionViwDashboard.reloadData()
         }
@@ -79,7 +98,6 @@ class DashboardViewController: BaseViewController {
     
     // MARK: Custom Methods
     
-    
     /// Set Layout as per device and orientation
     /// - Parameter isPortrait: orientation
     func setDynamicLayout(transition isPortrait:Bool = true) {
@@ -112,6 +130,42 @@ class DashboardViewController: BaseViewController {
         
         self.showSingleSelectionListDropdown(anchorView: self.btnSort, data: [Localizable.TotalSale.uppercased(), Localizable.AddToCart.uppercased(), Localizable.Downloads.uppercased(), Localizable.UserSessions.uppercased()])
     }
+    
+    // MARK: Custom Methods
+    
+    /// Company Details API call
+    func companyDetailsAPICall() {
+        
+        DispatchQueue.main.async {
+            
+            self.showProgress(msg: "")
+        }
+        
+        CompanyViewModel.sharedInstance.getListAPI() { (companyDetails) in
+            
+            DispatchQueue.main.async {
+                
+                self.stopProgress()
+                
+                if (companyDetails?.apps?.count ?? 0) > 0 {
+                    
+                    self.arrCompanyData = companyDetails?.apps
+                    
+                    self.createButtonTypeArray(type: .TotalSales, count: self.arrCompanyData?.count ?? 0)
+                    
+                    self.collectionViwDashboard.reloadData()
+                }
+            }
+        }
+    }
+    
+    func createButtonTypeArray(type:TypeOfButton, count:Int) {
+        
+        for _ in 0..<(self.arrCompanyData?.count ?? 0) {
+            
+            self.arrselectedSortType.append(type)
+        }
+    }
 }
 
 // MARK: - UITableViewDelegate, UITableViewDataSource
@@ -119,15 +173,28 @@ extension DashboardViewController : UICollectionViewDataSource, UICollectionView
    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return 8
+        return self.arrCompanyData?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let companyGraphCollectionViewCell:CompanyGraphCollectionViewCell = self.collectionViwDashboard.dequeueReusableCell(withReuseIdentifier: self.cellIdentifier, for: indexPath) as! CompanyGraphCollectionViewCell
-        
-        companyGraphCollectionViewCell.chartView.animate(xAxisDuration: 1.0)
+
+        companyGraphCollectionViewCell.setData(companyDetails: self.arrCompanyData?[indexPath.row], type: self.arrselectedSortType[indexPath.row])
+        companyGraphCollectionViewCell.btnDownloads.tag = indexPath.row
+        companyGraphCollectionViewCell.btnAddToCart.tag = indexPath.row
+        companyGraphCollectionViewCell.btnTotalSales.tag = indexPath.row
+        companyGraphCollectionViewCell.btnUserSessions.tag = indexPath.row
+        companyGraphCollectionViewCell.delegate = self
         
         return companyGraphCollectionViewCell
+    }
+}
+
+extension DashboardViewController : CompanyGraphCollectionViewCellDelegate {
+    
+    func selectedButtonType(index: Int, type: TypeOfButton) {
+        
+        self.arrselectedSortType[index] = type
     }
 }

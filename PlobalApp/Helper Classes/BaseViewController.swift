@@ -8,11 +8,27 @@
 
 import UIKit
 import DropDown
+import JGProgressHUD
 
 /// Base class for All controller.
 class BaseViewController: UIViewController {
 
     let singleSelectionListDropDown = DropDown()
+    let hud = JGProgressHUD(style: .extraLight)
+    
+    /// Show progress bar
+    /// - Parameter msg: message
+    func showProgress(msg:String) {
+        
+        hud.textLabel.text = msg
+        hud.show(in: self.view)
+    }
+    
+    /// stop progress bar
+    func stopProgress() {
+        
+        hud.dismiss()
+    }
     
     /// Show dropdown
     /// - Parameter anchorView: below view

@@ -3,20 +3,24 @@ PODS:
     - Charts/Core (= 3.5.0)
   - Charts/Core (3.5.0)
   - DropDown (2.3.13)
+  - JGProgressHUD (2.1)
 
 DEPENDENCIES:
   - Charts
   - DropDown
+  - JGProgressHUD
 
 SPEC REPOS:
   trunk:
     - Charts
     - DropDown
+    - JGProgressHUD
 
 SPEC CHECKSUMS:
   Charts: 40a08591df1f8ad5c223ddedfb1a06da92f24f7c
   DropDown: 8a2116376c1981888557f72ec2ffc9a5e0e456ec
+  JGProgressHUD: aa403e9a5b45cae98903c4600cccdd98c0c3ec90
 
-PODFILE CHECKSUM: fad75700ab3a81f9ad92494f8688eb44fc96ee0d
+PODFILE CHECKSUM: ff3cb46b2d366352e31ca41901c544eadbc6623e
 
 COCOAPODS: 1.9.1
